@@ -1,19 +1,44 @@
 
-function OpenCVUitl(inputId, outputId) {
+function OpenCVUitl(inputId, outputId, readCallback) {
   this.canvasId = inputId;
   this.outputCanvasId = outputId;
   this.threshold = -1;
   this.sizeThreshold = 50;
   this.imgLoaded = false;
-  this.src = new cv.Mat();
-  this.contours = new cv.MatVector();
-  this.hierarchy = new cv.Mat();
   this.selectedShapes = [];
   this.filteredShapes = [];
   this.selectCallback = null;
+  this.cvReady = false;
+  this.readyCallback = readCallback;
+  
+  if(this.readyCallback){
+    this.readyCallback(false);
+  }
+  if(cv.getBuildInformation) {
+    this.onInit();
+  } else {
+    cv['onRuntimeInitialized']=()=>{
+      console.log(cv.getBuildInformation());
+      this.onInit();
+    }
+  }
+} 
+
+OpenCVUitl.prototype.onInit = function() {
+  this.src = new cv.Mat();
+  this.contours = new cv.MatVector();
+  this.hierarchy = new cv.Mat();
+  this.cvReady = true;
+  if(this.readyCallback) {
+    this.readyCallback(true);
+  }
 } 
 
 OpenCVUitl.prototype.loadImage = function(url) {
+  if(!this.cvReady) {
+    throw new Error("OpenCV Runtime is not ready");
+  }
+
   this.imgLoaded = false;
   this.src.delete();
   this.contours.delete();
@@ -50,8 +75,10 @@ OpenCVUitl.prototype.setThreshold = function(val) {
     throw new Error("Threshold is out of bounds");
   }
   this.threshold = parseInt(val);
-  this.findShapes();
-  this.drawShapes();
+  if(this.imgLoaded) {
+    this.findShapes();
+    this.drawShapes();
+  }
 }
 
 OpenCVUitl.prototype.setSizeThreshold = function(val) {

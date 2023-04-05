@@ -4,18 +4,18 @@ import {Container, Col, Row, Form, Badge, Table} from "solid-bootstrap";
 import { OpenCVUitl } from './cv_util';
 
 function App() {
-  const cvUtil = new OpenCVUitl("canvasInput", "canvasOutput");
   const [threshold, setThreshold] = createSignal(33);
   const [sizeThreshold, setSizeThreshold] = createSignal(70);
   const [shapes, setShapes] = createSignal([]);
-
+  const [cvReady, setCvReady] = createSignal(false);
+  
+  const cvUtil = new OpenCVUitl("canvasInput", "canvasOutput", setCvReady);
   createEffect(() => {
     cvUtil.setThreshold(threshold());
   });
   createEffect(() => {
     cvUtil.setSizeThreshold(sizeThreshold());
   });
-
   function selectShapeCallback(s) {
     setShapes(s);
   }
@@ -49,10 +49,11 @@ function App() {
                     let imgUrl = URL.createObjectURL(files[0]);
                     cvUtil.loadImage(imgUrl);
                   }
-                }}/>
+                }}
+                disabled={!cvReady()}/>
             </Col></Row>
             <Row><Col>
-              <Form.Label>Threshold <Badge bg="secondary">{threshold()}</Badge></Form.Label>
+              <Form.Label>Binarization Threshold <Badge bg="secondary">{threshold()}</Badge></Form.Label>
               <Form.Range min={0} max={255} value={threshold()}
                 onInput={(e) => setThreshold(e.target.value)}/>
             </Col></Row>
