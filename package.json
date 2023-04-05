@@ -11,10 +11,12 @@
   "license": "MIT",
   "devDependencies": {
     "vite": "^4.1.1",
-    "vite-plugin-solid": "^2.5.0"
+    "vite-plugin-solid": "^2.5.0",
+    "vite-plugin-commonjs": "^0.6.2"
   },
   "dependencies": {
     "solid-js": "^1.6.10",
-    "solid-bootstrap": "^1.0.11"
+    "solid-bootstrap": "^1.0.11",
+    "vite-plugin-commonjs": "^0.6.2"
   }
 }
